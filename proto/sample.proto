@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option go_package = "github.com/chris-jansson/sample-grpc-bidi-service-go/generated/sample;samplepb";
+
+service SampleService {
+	rpc ProcessMessage(stream Request) returns (stream Response);
+}
+
+message Request {
+	string payload = 1;
+}
+
+message Response {
+	string payload = 1;
+}
