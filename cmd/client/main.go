@@ -8,7 +8,6 @@ import (
 
 	pb "github.com/chris-jansson/sample-grpc-bidi-service-go/generated/sample"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials/insecure"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 )
@@ -85,7 +84,7 @@ func main() {
 	}
 	defer conn.Close()
 
-	healthRpcContext, cancel := context.WithCancel(context.Background())
+	healthRpcContext, _ := context.WithCancel(context.Background())
 	go openHealthStream(conn, healthRpcContext)
 
 	// Connection state listener goroutine
@@ -95,11 +94,11 @@ func main() {
 		for {
 			log.Printf("Connection state changed to %v", state.String())
 
-			if state == connectivity.Idle {
-				log.Println("Connection state is IDLE, canceling health stream")
-				cancel()
-				return
-			}
+			// if state == connectivity.Idle {
+			// 	log.Println("Connection state is IDLE, canceling health stream")
+			// 	cancel()
+			// 	return
+			// }
 
 			conn.WaitForStateChange(context.Background(), state)
 			state = conn.GetState()
