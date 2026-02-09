@@ -62,7 +62,20 @@ func main() {
 
 	healthServer := health.NewServer()
 	healthpb.RegisterHealthServer(grpcServer, healthServer)
-	healthServer.SetServingStatus("", healthpb.HealthCheckResponse_SERVING)
+
+	go func() {
+		for {
+			log.Println("Setting server health status to SERVING")
+			healthServer.SetServingStatus("", healthpb.HealthCheckResponse_SERVING)
+
+			time.Sleep(5 * time.Second)
+
+			log.Println("Setting server health status to NOT_SERVING")
+			healthServer.SetServingStatus("", healthpb.HealthCheckResponse_NOT_SERVING)
+
+			time.Sleep(5 * time.Second)
+		}
+	}()
 
 	pb.RegisterSampleServiceServer(grpcServer, &sampleServiceServer{})
 
