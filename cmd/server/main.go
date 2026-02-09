@@ -107,9 +107,6 @@ func runShutdownSequence(grpcServer *grpc.Server, healthServer *health.Server) {
 
 	time.Sleep(1 * time.Second)
 
-	log.Println("Closing existing stream")
-	streamShutdownCh <- struct{}{}
-
 	select {
 	case <-grpcShutdownChan:
 		log.Println("All streams closed cleanly")

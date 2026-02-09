@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"time"
 
 	pb "github.com/chris-jansson/sample-grpc-bidi-service-go/generated/sample"
 	"google.golang.org/grpc"
@@ -21,7 +22,7 @@ func openStream(client pb.SampleServiceClient) {
 	}
 
 	// Start receive goroutine
-	waitc := make(chan struct{})
+	// waitc := make(chan struct{})
 	go func() {
 		for {
 			in, err := stream.Recv()
@@ -38,15 +39,21 @@ func openStream(client pb.SampleServiceClient) {
 		}
 	}()
 
-	err = stream.Send(&pb.Request{Payload: "foo"})
-	if err != nil {
-		log.Fatalf("Failed to send message: %v", err)
+	for {
+		log.Println("Sending message")
+
+		err = stream.Send(&pb.Request{Payload: "foo"})
+		if err != nil {
+			log.Fatalf("Failed to send message: %v", err)
+		}
+
+		time.Sleep(1 * time.Second)
 	}
 
-	stream.CloseSend()
+	// stream.CloseSend()
 
 	// Block main thread until the wait channel is closed
-	<-waitc
+	// <-waitc
 }
 
 func main() {
