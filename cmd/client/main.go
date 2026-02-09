@@ -6,7 +6,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"time"
 
 	pb "github.com/chris-jansson/sample-grpc-bidi-service-go/generated/sample"
 	"google.golang.org/grpc"
@@ -83,11 +82,6 @@ func main() {
 	}()
 
 	client := pb.NewSampleServiceClient(conn)
-
-	// Wait 3 seconds before opening stream. Server will still be NOT_SERVING for a couple more seconds
-	// log.Println("Waiting 3 seconds before opening stream...")
-	time.Sleep(3 * time.Second)
-	log.Println("Opening stream")
 
 	openStream(client)
 }
