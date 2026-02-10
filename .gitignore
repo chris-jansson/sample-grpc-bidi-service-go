@@ -1,0 +1,5 @@
+# VS Code workspace settings
+.vscode/
+
+# Java build output directories
+java/**/target/
