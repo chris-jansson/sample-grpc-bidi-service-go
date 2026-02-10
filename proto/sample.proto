@@ -1,6 +1,8 @@
 syntax = "proto3";
 
 option go_package = "github.com/chris-jansson/sample-grpc-bidi-service-go/generated/sample;samplepb";
+option java_package = "samplepb";
+option java_outer_classname = "SampleProto";
 
 service SampleService {
 	rpc ProcessMessage(stream Request) returns (stream Response);
