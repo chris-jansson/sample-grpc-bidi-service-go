@@ -21,7 +21,6 @@ import (
 
 var (
 	port             = flag.Int("port", 50051, "The server port")
-	streamShutdownCh = make(chan struct{})
 )
 
 type sampleServiceServer struct {
@@ -34,9 +33,8 @@ func (s *sampleServiceServer) ProcessMessage(stream pb.SampleService_ProcessMess
 	for {
 		_, err := stream.Recv()
 		if err == io.EOF {
-			log.Println("Client completed sending messages")
+			log.Println("Client completed sending messages; closing stream")
 
-			<-streamShutdownCh
 			return nil
 		}
 		if err != nil {
