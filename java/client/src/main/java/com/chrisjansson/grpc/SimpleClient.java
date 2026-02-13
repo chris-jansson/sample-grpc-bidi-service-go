@@ -20,31 +20,40 @@ public class SimpleClient {
                 .usePlaintext()
                 .build();
 
+        callHealthRpc(channel);
+        callSampleServiceRpc(channel);
+
+        Thread.sleep(Long.MAX_VALUE);
+    }
+
+    private static void callHealthRpc(ManagedChannel channel) {
         HealthGrpc.HealthStub healthStub = HealthGrpc.newStub(channel);
 
-        log.info("Calling Watch RPC on health service");
+        log.info("Calling /Watch RPC");
 
         HealthCheckRequest healthRequest = HealthCheckRequest.newBuilder()
-                .setService("")  // Empty string checks overall server health
+                .setService("")
                 .build();
 
         healthStub.watch(healthRequest, new StreamObserver<HealthCheckResponse>() {
             @Override
             public void onNext(HealthCheckResponse response) {
-                log.info("Health status update: " + response.getStatus());
+                log.info("Received health update: " + response.getStatus());
             }
 
             @Override
             public void onError(Throwable t) {
-                log.severe("Error in health watch: " + t.getMessage());
+                log.severe("Received error on health stream: " + t.getMessage());
             }
 
             @Override
             public void onCompleted() {
-                log.info("Health watch stream completed");
+                log.info("Server completed health stream");
             }
         });
+    }
 
+    private static void callSampleServiceRpc(ManagedChannel channel) {
         SampleServiceGrpc.SampleServiceStub stub = SampleServiceGrpc.newStub(channel);
 
         log.info("Calling ProcessMessage RPC");
@@ -74,7 +83,5 @@ public class SimpleClient {
         log.info("Closing stream");
 
         requestObserver.onCompleted();
-
-        Thread.sleep(Long.MAX_VALUE);
     }
 }
