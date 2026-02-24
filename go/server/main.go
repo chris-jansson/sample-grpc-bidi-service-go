@@ -103,7 +103,7 @@ func runShutdownSequence(grpcServer *grpc.Server, healthServer *health.Server) {
 		grpcShutdownChan <- struct{}{}
 	}()
 
-	time.Sleep(1 * time.Second)
+	time.Sleep(5 * time.Second)
 
 	select {
 	case <-grpcShutdownChan:

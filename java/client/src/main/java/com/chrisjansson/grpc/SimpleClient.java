@@ -3,29 +3,42 @@ package com.chrisjansson.grpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
-import io.grpc.health.v1.HealthCheckRequest;
-import io.grpc.health.v1.HealthCheckResponse;
-import io.grpc.health.v1.HealthGrpc;
 import lombok.extern.java.Log;
 import samplepb.SampleServiceGrpc;
 import samplepb.SampleProto.Request;
 import samplepb.SampleProto.Response;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Log
 public class SimpleClient {
 
     public static void main(String[] args) throws InterruptedException {
         String target = "localhost:50051";
+
+        // Service config that enables health checking
+        Map<String, Object> healthCheckConfig = new HashMap<>();
+        healthCheckConfig.put("serviceName", "");
+
+        Map<String, Object> serviceConfig = new HashMap<>();
+        serviceConfig.put("healthCheckConfig", healthCheckConfig);
+
         ManagedChannel channel = ManagedChannelBuilder.forTarget(target)
                 .usePlaintext()
+                .defaultServiceConfig(serviceConfig)
+                .enableRetry()
                 .build();
 
-        callHealthRpc(channel);
+        // Health monitoring is now handled by the service config
+        // callHealthRpc(channel);
         callSampleServiceRpc(channel);
 
         Thread.sleep(Long.MAX_VALUE);
     }
 
+    // Explicit health RPC call - now replaced by service config health checking
+    /*
     private static void callHealthRpc(ManagedChannel channel) {
         HealthGrpc.HealthStub healthStub = HealthGrpc.newStub(channel);
 
@@ -52,6 +65,7 @@ public class SimpleClient {
             }
         });
     }
+    */
 
     private static void callSampleServiceRpc(ManagedChannel channel) {
         SampleServiceGrpc.SampleServiceStub stub = SampleServiceGrpc.newStub(channel);
